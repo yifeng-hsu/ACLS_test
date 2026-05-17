@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACLS 2026 臨床決策文字模擬器</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #app {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #58a6ff;
+            text-align: center;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 15px;
+        }
+        .scenario-panel {
+            background-color: #000;
+            border-left: 5px solid #238636;
+            padding: 20px;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #3fb950;
+            border-radius: 4px;
+        }
+        .control-group {
+            margin-bottom: 20px;
+            background: #21262d;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #8b949e;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+        select:focus, input:focus {
+            border-color: #58a6ff;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+            color: #c9d1d9;
+            cursor: pointer;
+        }
+        .btn {
+            background-color: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn:hover { background-color: #2ea043; }
+        .btn-nav {
+            background-color: #1f6feb;
+            margin-bottom: 10px;
+        }
+        .btn-nav:hover { background-color: #388bfd; }
+        #feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+        .success { background-color: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid #238636; }
+        .error { background-color: rgba(248, 81, 73, 0.2); color: #ff7b72; border: 1px solid #f85149; }
+        #nextBtn {
+            margin-top: 15px;
+            background-color: #8957e5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <h1>ACLS 2026 決策文字模擬器</h1>
+    <div id="scenario" class="scenario-panel">載入中...</div>
+
+    <div id="controls">
+        <div id="nav-group" style="display: none;"></div>
+
+        <div id="stability-group" class="control-group" style="display: none;">
+            <label>1. 判斷生命徵象穩定度：</label>
+            <div class="radio-group">
+                <label><input type="radio" name="stability" value="穩定"> 穩定 (無症狀/血壓正常)</label>
+                <label><input type="radio" name="stability" value="不穩定"> 不穩定 (痛/喘/昏/休克)</label>
+            </div>
+        </div>
+
+        <div id="action-group" class="control-group" style="display: none;">
+            <label>2. 選擇主要處置方式：</label>
+            <select id="actionType">
+                <option value="">請選擇...</option>
+                <option value="去顫(非同步)">去顫 (非同步電擊)</option>
+                <option value="同步心臟整流">同步心臟整流</option>
+                <option value="給藥">給予藥物</option>
+                <option value="迷走神經刺激">迷走神經刺激術</option>
+                <option value="觀察">持續觀察與 CPR</option>
+            </select>
+        </div>
+
+        <div id="joules-group" class="control-group" style="display: none;">
+            <label>3. 設定電擊焦耳數 (Joules)：</label>
+            <input type="number" id="joules" placeholder="請輸入數值 (例如: 200)">
+        </div>
+
+        <div id="drug-group" class="control-group" style="display: none;">
+            <label>3. 選擇給予藥物：</label>
+            <select id="drugList">
+                <option value="">請選擇藥物...</option>
+                <option value="Epinephrine">Epinephrine</option>
+                <option value="Atropine">Atropine</option>
+                <option value="Amiodarone">Amiodarone</option>
+                <option value="Lidocaine">Lidocaine</option>
+                <option value="Adenosine">Adenosine</option>
+                <option value="Diltiazem">Diltiazem</option>
+                <option value="Verapamil">Verapamil</option>
+                <option value="Procainamide">Procainamide</option>
+                <option value="MgSO4">Magnesium Sulfate (MgSO4)</option>
+                <option value="Dopamine">Dopamine</option>
+            </select>
+        </div>
+
+        <div id="dose-group" class="control-group" style="display: none;">
+            <label>4. 藥物劑量 (mg/g)：</label>
+            <input type="number" id="dose" placeholder="請輸入單次劑量數值">
+        </div>
+
+        <button id="submitBtn" class="btn" onclick="checkAnswer()" style="display: none;">確認處置送出</button>
+    </div>
+
+    <div id="feedback"></div>
+    <button id="nextBtn" class="btn" onclick="goNext()">進入下一步</button>
+</div>
+
+<script>
+    const gameData = {
+        "MENU": {
+            text: "歡迎進入 ACLS 2026 (完整版) 臨床路徑決策遊戲。<br><br>身為急救現場隊長，請選擇您要演練的情境：",
+            nav: [
+                { label: "[無脈搏] VF / 無脈搏VT", target: "VF_1" },
+                { label: "[無脈搏] Asystole / PEA", target: "PEA_1" },
+                { label: "[心搏過慢] HR < 50", target: "BRADY_1" },
+                { label: "[心搏過速] 不穩定", target: "TACHY_UNSTABLE_1" },
+                { label: "[心搏過速] 穩定窄頸規則 (PSVT)", target: "TACHY_PSVT_1" },
+                { label: "[心搏過速] 穩定窄頸不規則 (Af)", target: "TACHY_AF_1" },
+                { label: "[心搏過速] 穩定寬頸多型性VT (Torsades)", target: "TACHY_POLY_1" }
+            ]
+        },
+        /* ================= VF/pVT 路徑 ================= */
+        "VF_1": {
+            text: "【無脈搏情境】病患倒下，評估無呼吸無脈搏，已開始高品質 CPR。文字監視器顯示：波形雜亂無規律 (VF 心室顫動)。請選擇下一步處置：",
+            show: ["action", "joules"],
+            expected: { action: "去顫(非同步)", joules: "200" },
+            successMsg: "正確！可電擊心律應盡快給予雙向波 200J 去顫，電擊後立刻重新開始 CPR 2分鐘。",
+            next: "VF_2"
+        },
+        "VF_2": {
+            text: "CPR 2分鐘後，第二次分析心律仍為 VF。完成第二次去顫 200J 並繼續 CPR。此時尚未建立進階呼吸道。<br>請問此時應給予什麼藥物？",
+            show: ["action", "drug", "dose"],
+            expected: { action: "給藥", drug: "Epinephrine", dose: "1" },
+            successMsg: "正確！給予 Epinephrine 1 mg，之後每 3-5 分鐘給予一次。",
+            next: "VF_3"
+        },
+        "VF_3": {
+            text: "CPR 2分鐘後，第三次分析心律仍為 VF。完成第三次去顫 200J 並繼續 CPR。<br>請問此時應給予什麼抗心律不整藥物？",
+            show: ["action", "drug", "dose"],
+            expected: { action: "給藥", drug: "Amiodarone", dose: "300" },
+            successMsg: "正確！給予 Amiodarone 300 mg IV。注意 2025 指引 Amiodarone 最多不超過3次。無脈搏挑戰完成！",
+            next: "MENU"
+        },
+
+        /* ================= Asystole/PEA 路徑 ================= */
+        "PEA_1": {
+            text: "【無脈搏情境】病患倒下無脈搏，文字監視器顯示：Asystole (平線)。已開始 CPR。<br>請問首要的藥物處置為？(注意：不可電擊)",
+            show: ["action", "drug", "dose"],
+            expected: { action: "給藥", drug: "Epinephrine", dose: "1" },
+            successMsg: "正確！Asystole/PEA 不可電擊，應儘早給予 Epinephrine 1mg，持續 CPR 並尋找 5H/5T 原因。",
+            next: "MENU"
+        },
+
+        /* ================= 心搏過慢路徑 ================= */
+        "BRADY_1": {
+            text: "【心搏過慢情境】病患有脈搏，HR = 40 次/分。<br>病患主訴嚴重胸痛，冒冷汗，血壓 70/40 mmHg。請問：",
+            show: ["stability", "action", "drug", "dose"],
+            expected: { stability: "不穩定", action: "給藥", drug: "Atropine", dose: "1" },
+            successMsg: "判斷正確！具有胸痛、休克(低血壓)即為不穩定。<br>第一線用藥為 Atropine 1 mg (上限3mg)。若無效則準備 TCP 或 Dopamine 滴注。",
+            next: "MENU"
+        },
+
+        /* ================= 心搏過速不穩定路徑 ================= */
+        "TACHY_UNSTABLE_1": {
+            text: "【心搏過速情境】病患有脈搏，HR = 170 次/分。<br>病患嚴重喘息，意識模糊，血壓 80/50 mmHg。<br>心電圖為窄 QRS 波。請問：",
+            show: ["stability", "action", "joules"],
+            expected: { stability: "不穩定", action: "同步心臟整流", joules: "100" },
+            successMsg: "判斷正確！有症狀(喘/昏/休克)即為不穩定。<br>處置為「同步心臟整流」(VT/PSVT 建議 100J)。",
+            next: "MENU"
+        },
+
+        /* ================= 心搏過速穩定 (PSVT) 路徑 ================= */
+        "TACHY_PSVT_1": {
+            text: "【心搏過速情境】病患有脈搏，HR = 160 次/分。血壓 120/80 mmHg，無不適。<br>心電圖：窄QRS波、R-R間距規則 (PSVT)。請問：",
+            show: ["stability", "action"],
+            expected: { stability: "穩定", action: "迷走神經刺激" },
+            successMsg: "判斷正確！穩定窄頸規則心律，第一步先嘗試迷走神經刺激術。",
+            next: "TACHY_PSVT_2"
+        },
+        "TACHY_PSVT_2": {
+            text: "迷走神經刺激無效，心跳仍為 160 次/分。請選擇下一步藥物與首劑劑量：",
+            show: ["action", "drug", "dose"],
+            expected: { action: "給藥", drug: "Adenosine", dose: "6" },
+            successMsg: "正確！給予 Adenosine 6 mg 快速推注。若無效，1-2分鐘後再給予 12 mg。",
+            next: "MENU"
+        },
+
+        /* ================= 心搏過速穩定 (Af) 路徑 ================= */
+        "TACHY_AF_1": {
+            text: "【心搏過速情境】病患有脈搏，HR = 150 次/分。血壓 130/80 mmHg。<br>心電圖：窄QRS波、R-R間距不規則 (Af)。病患無心衰竭(無肺部囉音)。請問處置：",
+            show: ["stability", "action", "drug"],
+            expected: { stability: "穩定", action: "給藥", drug: "Diltiazem" },
+            successMsg: "正確！穩定窄頸不規則且無心衰竭，首選鈣離子通道阻斷劑 (Diltiazem 或 Verapamil) 控制心率。",
+            next: "MENU"
+        },
+
+        /* ================= 多型性VT (Torsades) 路徑 ================= */
+        "TACHY_POLY_1": {
+            text: "【多型性VT情境】病患有脈搏，血壓 110/70 mmHg。<br>心電圖：寬QRS波、不規則 (多型性VT / Torsades de pointes)，已知病患有 QT 延長。<br>(注意：QT延長者不可使用 Amiodarone)。請問處置：",
+            show: ["stability", "action", "drug", "dose"],
+            expected: { stability: "穩定", action: "給藥", drug: "MgSO4" }, // 劑量檢查特別寫入邏輯
+            successMsg: "正確！給予 MgSO4 1-2 gm IVF 滴注。切記不可給予 Amiodarone。",
+            next: "MENU"
+        }
+    };
+
+    let currentState = "MENU";
+
+    function renderState(stateId) {
+        currentState = stateId;
+        const state = gameData[stateId];
+        
+        document.getElementById('scenario').innerHTML = state.text;
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+
+        // 重置所有輸入
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+        document.getElementById('actionType').value = "";
+        document.getElementById('joules').value = "";
+        document.getElementById('drugList').value = "";
+        document.getElementById('dose').value = "";
+
+        // 隱藏所有區塊
+        document.getElementById('nav-group').style.display = 'none';
+        document.getElementById('stability-group').style.display = 'none';
+        document.getElementById('action-group').style.display = 'none';
+        document.getElementById('joules-group').style.display = 'none';
+        document.getElementById('drug-group').style.display = 'none';
+        document.getElementById('dose-group').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('nav-group').innerHTML = '';
+
+        if (state.nav) {
+            document.getElementById('nav-group').style.display = 'block';
+            state.nav.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-nav';
+                btn.innerText = item.label;
+                btn.onclick = () => renderState(item.target);
+                document.getElementById('nav-group').appendChild(btn);
+            });
+        } else {
+            document.getElementById('submitBtn').style.display = 'block';
+            if (state.show.includes("stability")) document.getElementById('stability-group').style.display = 'block';
+            if (state.show.includes("action")) document.getElementById('action-group').style.display = 'block';
+            if (state.show.includes("joules")) document.getElementById('joules-group').style.display = 'block';
+            if (state.show.includes("drug")) document.getElementById('drug-group').style.display = 'block';
+            if (state.show.includes("dose")) document.getElementById('dose-group').style.display = 'block';
+        }
+
+        // 動態連動：若選擇給藥才顯示藥物/劑量，若選擇去顫/整流才顯示焦耳
+        document.getElementById('actionType').onchange = function() {
+            let val = this.value;
+            if(state.show.includes("joules")) {
+                document.getElementById('joules-group').style.display = (val === '去顫(非同步)' || val === '同步心臟整流') ? 'block' : 'none';
+            }
+            if(state.show.includes("drug")) {
+                document.getElementById('drug-group').style.display = (val === '給藥') ? 'block' : 'none';
+            }
+            if(state.show.includes("dose")) {
+                document.getElementById('dose-group').style.display = (val === '給藥') ? 'block' : 'none';
+            }
+        };
+    }
+
+    function checkAnswer() {
+        const expected = gameData[currentState].expected;
+        let isCorrect = true;
+        let errorMsg = "判斷有誤，請再確認 ACLS 2026 流程。";
+
+        if (expected.stability) {
+            let selected = document.querySelector('input[name="stability"]:checked');
+            if (!selected || selected.value !== expected.stability) isCorrect = false;
+        }
+        if (expected.action && document.getElementById('actionType').value !== expected.action) {
+            isCorrect = false;
+        }
+        if (expected.joules && document.getElementById('joules').value !== expected.joules) {
+            isCorrect = false;
+        }
+        if (expected.drug && document.getElementById('drugList').value !== expected.drug) {
+            isCorrect = false;
+        }
+        if (expected.dose) {
+            let doseVal = parseFloat(document.getElementById('dose').value);
+            // 針對 MgSO4 1-2g 的特殊寬容判定
+            if (currentState === "TACHY_POLY_1" && (doseVal >= 1 && doseVal <= 2)) {
+                // Correct
+            } else if (document.getElementById('dose').value !== expected.dose) {
+                isCorrect = false;
+            }
+        }
+
+        const fb = document.getElementById('feedback');
+        fb.style.display = 'block';
+        if (isCorrect) {
+            fb.className = 'success';
+            fb.innerHTML = "✅ " + gameData[currentState].successMsg;
+            document.getElementById('nextBtn').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'none';
+        } else {
+            fb.className = 'error';
+            fb.innerHTML = "❌ " + errorMsg;
+        }
+    }
+
+    function goNext() {
+        renderState(gameData[currentState].next);
+    }
+
+    // 初始化啟動
+    renderState("MENU");
+</script>
+</body>
+</html>
