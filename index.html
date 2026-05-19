@@ -3,534 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 ACLS 流程演練系統</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Microsoft JhengHei';
-            background-color: #f5f7fa;
-            color: var(--dark);
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        #app-container {
-            width: 100%;
-            max-width: 800px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 30px;
-            box-sizing: border-box;
-        }
-        h1, h2, h3 {
-            color: var(--primary);
-            text-align: center;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 10px;
-        }
-        .menu-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 15px 0;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: var(--secondary);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .menu-btn:hover { background-color: #2980b9; }
-        .exam-btn { background-color: #9b59b6; }
-        .exam-btn:hover { background-color: #8e44ad; }
-        
-        #game-area { display: none; }
-        .scenario-text {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            padding: 20px;
-            background-color: var(--light);
-            border-left: 5px solid var(--secondary);
-            border-radius: 0 5px 5px 0;
-        }
-        .option-btn {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 16px;
-            background-color: white;
-            border: 2px solid var(--secondary);
-            color: var(--dark);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .option-btn:hover {
-            background-color: var(--secondary);
-            color: white;
-        }
-        .input-container {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
-        input[type="number"] {
-            padding: 10px;
-            font-size: 18px;
-            width: 150px;
-            text-align: center;
-            border: 2px solid var(--primary);
-            border-radius: 5px;
-        }
-        .submit-btn {
-            padding: 10px 25px;
-            font-size: 18px;
-            background-color: var(--success);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        .submit-btn:hover { background-color: #27ae60; }
-        .feedback {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            display: none;
-        }
-        .feedback.error {
-            background-color: #fadbd8;
-            color: #c0392b;
-            border: 1px solid #e74c3c;
-        }
-        .feedback.success {
-            background-color: #d5f5e3;
-            color: #27ae60;
-            border: 1px solid #2ecc71;
-        }
-        .controls {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #ccc;
-            padding-top: 20px;
-        }
-        .small-btn {
-            padding: 8px 15px;
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .small-btn:hover { background: #7f8c8d; }
-    </style>
+    <title>ACLS 全路徑訓練系統</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="app" class="app-container">
+        <!-- Main Menu -->
+        <div id="main-menu" class="view active glass-panel">
+            <h1 class="title-gradient">ACLS 2025<br>全路徑訓練系統</h1>
+            <p class="subtitle">提升您的急救決策能力</p>
+            <div class="menu-buttons">
+                <button id="btn-learning-mode" class="btn primary-btn">學習模式</button>
+                <button id="btn-test-mode" class="btn secondary-btn">考試模式</button>
+            </div>
+        </div>
 
-<div id="app-container">
-    <div id="main-menu">
-        <h1>2025 ACLS 流程演練系統</h1>
-        <p style="text-align: center;">依據 2025 ACLS 完整版指引製作。請選擇模式開始演練：</p>
-        <button class="menu-btn" onclick="startGame('learning')">📚 學習模式 (自選路徑，從頭開始)</button>
-        <button class="menu-btn exam-btn" onclick="startGame('exam')">🎯 考試模式 (隨機情境測驗)</button>
-    </div>
+        <!-- Path Selection (Learning Mode) -->
+        <div id="path-selection" class="view glass-panel">
+            <h2>選擇要練習的路徑</h2>
+            <div id="path-list" class="path-grid">
+                <!-- Dynamically populated by JS -->
+            </div>
+            <button id="btn-back-menu" class="btn ghost-btn">返回主選單</button>
+        </div>
 
-    <div id="game-area">
-        <h2 id="mode-title">模式</h2>
-        <div id="scenario-text" class="scenario-text">情境文字</div>
-        
-        <div id="options-container"></div>
-        
-        <div id="input-container" class="input-container">
-            <input type="number" id="value-input" placeholder="請輸入數值">
-            <span id="unit-text" style="font-weight:bold; font-size: 18px;"></span>
-            <button class="submit-btn" onclick="checkInput()">確認</button>
+        <!-- Scenario View -->
+        <div id="scenario-view" class="view glass-panel">
+            <div class="scenario-header">
+                <h2 id="scenario-title">情境名稱</h2>
+                <div class="mode-badge" id="mode-badge">模式</div>
+            </div>
+            
+            <div class="scenario-content">
+                <div class="scenario-description">
+                    <p id="scenario-text">情境描述將在這裡顯示...</p>
+                </div>
+
+                <div class="feedback-box" id="feedback-box" style="display: none;">
+                    <p id="feedback-text"></p>
+                </div>
+
+                <form id="action-form" class="action-form">
+                    <div class="form-group">
+                        <label for="treatment-select">處置</label>
+                        <select id="treatment-select" required>
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="drug-select">藥物</label>
+                        <select id="drug-select">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="value-input">數值 (劑量/焦耳數)</label>
+                        <input type="number" id="value-input" step="any" placeholder="請輸入數值">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unit-select">單位</label>
+                        <select id="unit-select">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn submit-btn">確認處置</button>
+                </form>
+            </div>
+            <div class="scenario-footer">
+                <button id="btn-quit-scenario" class="btn ghost-btn">放棄並返回</button>
+            </div>
         </div>
         
-        <div id="feedback-msg" class="feedback"></div>
-
-        <div class="controls">
-            <button class="small-btn" onclick="returnToMenu()">返回主選單</button>
-            <button id="next-exam-btn" class="small-btn exam-btn" style="display:none;" onclick="nextExam()">下一題</button>
+        <!-- Result View -->
+        <div id="result-view" class="view glass-panel">
+            <h2 id="result-title">完成！</h2>
+            <p id="result-message">您已成功走完此路徑。</p>
+            <div id="test-stats" style="display: none;">
+                <p>錯誤次數: <span id="error-count">0</span></p>
+            </div>
+            <div class="menu-buttons">
+                <button id="btn-result-next" class="btn primary-btn">下一題</button>
+                <button id="btn-result-home" class="btn secondary-btn">回主選單</button>
+            </div>
         </div>
     </div>
-</div>
-
-<script>
-    // 定義所有 ACLS 節點狀態
-    const nodes = {
-        // --- 學習模式起點 ---
-        start: {
-            text: "初步評估病患。完成 ACLS survey (O2/IV/monitor/生命徵象)，請問患者狀態為何？",
-            type: "choice",
-            options: [
-                { text: "沒有脈搏", next: "no_pulse_start" },
-                { text: "有脈搏，心跳 < 50 次/分 (緩脈)", next: "brady_start" },
-                { text: "有脈搏，心跳 ≥ 150 次/分 (頻脈)", next: "tachy_start" }
-            ]
-        },
-        
-        // ================= 緩脈路徑 =================
-        brady_start: {
-            text: "【有脈搏緩脈】請評估病患是否有不穩定徵兆 (胸痛、意識改變、喘/心衰竭、休克/低血壓)？",
-            type: "choice",
-            options: [
-                { text: "穩定 (無上述徵兆)", next: "brady_stable" },
-                { text: "不穩定 (有上述徵兆)", next: "brady_unstable" }
-            ]
-        },
-        brady_stable: { // 結局 1
-            text: "【結局 1：有脈搏且穩定 - 緩脈】\n心電圖可能為 Sinus Bradycardia, 1度 AV-Block, 或 2度1 AV-Block。\n穩定病患不需立即給藥。\n處置原則為：觀察 + 找原因 (5H/5T)。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        brady_unstable: {
-            text: "病患不穩定，進入不穩定緩脈路徑。第一線藥物為 Atropine，請輸入給予的單次靜脈注射劑量：",
-            type: "input", unit: "mg", correctValue: 1, next: "brady_unstable_fail",
-            errorText: "錯誤！2025 ACLS 建議 Atropine 單次給予 1 mg (最大限制 3mg)。"
-        },
-        brady_unstable_fail: {
-            text: "給予 Atropine 後若效果不彰(或於 2度2、3度AV Block無效)，請問替代的【儀器介入】處置為何？",
-            type: "choice",
-            options: [
-                { text: "非同步電擊去顫", isError: true, errorText: "錯誤！緩脈不應電擊去顫。" },
-                { text: "經皮心律調節器 (TCP)", next: "tcp_setup" },
-                { text: "同步心臟整流", isError: true, errorText: "錯誤！同步整流適用於不穩定頻脈。" }
-            ]
-        },
-        tcp_setup: {
-            text: "準備使用 TCP (需先給鎮定止痛，不可用於低體溫)。請輸入 TCP 建議的初始能量輸出設定：",
-            type: "input", unit: "mA", correctValue: 30, next: "brady_unstable_meds",
-            errorText: "錯誤！TCP 能量輸出 (Output) 建議設定為 30 mA (HR設60-80次/分)。"
-        },
-        brady_unstable_meds: { // 結局 2
-            text: "【結局 2：有脈搏且不穩定 - 緩脈】\n若 TCP 無法使用或作為後續二線，可給予 Dopamine (5-20 µg/Kg/min) 或 Epinephrine (2-10 µg/min) 滴注。\n特殊情況(如乙型阻斷劑過量)可考慮 Glucagon。\n最終處置：會診心臟科，考慮 TVP，入住 CCU。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-
-        // ================= 頻脈路徑 =================
-        tachy_start: {
-            text: "【有脈搏頻脈】病患心跳 ≥ 150 次/分，請評估是否穩定？",
-            type: "choice",
-            options: [
-                { text: "穩定 (無痛、昏、喘、休克)", next: "tachy_stable_ekg" },
-                { text: "不穩定 (出現胸痛、意識改變、休克等)", next: "tachy_unstable" }
-            ]
-        },
-        // --- 穩定頻脈分支 ---
-        tachy_stable_ekg: {
-            text: "病患穩定，請依據 12 導程 EKG 判讀其 QRS 波寬度與規律性：",
-            type: "choice",
-            options: [
-                { text: "窄 QRS (<0.12秒) 且 規則 (如 PSVT)", next: "tachy_svt" },
-                { text: "窄 QRS (<0.12秒) 且 不規則 (如 Af/AF)", next: "tachy_af" },
-                { text: "寬 QRS (≥0.12秒) 且 規則 (如 VT)", next: "tachy_wide_reg" },
-                { text: "寬 QRS (≥0.12秒) 且 不規則 (多型性VT)", next: "tachy_poly_vt" }
-            ]
-        },
-        // 窄規則 (SVT)
-        tachy_svt: {
-            text: "EKG 為窄 QRS 且規則 (沒有P波，考慮 PSVT)。初步迷走神經刺激無效後，決定給予 Adenosine (非氣喘患者)。\n請輸入【第一劑】Adenosine 快速推注劑量：",
-            type: "input", unit: "mg", correctValue: 6, next: "tachy_svt_2nd",
-            errorText: "錯誤！第一劑 Adenosine 應為 6 mg。"
-        },
-        tachy_svt_2nd: {
-            text: "等待 1-2 分鐘後若無效，需給予【第二劑】Adenosine。\n請輸入第二劑劑量：",
-            type: "input", unit: "mg", correctValue: 12, next: "end_tachy_svt",
-            errorText: "錯誤！第二劑 Adenosine 應為 12 mg。"
-        },
-        end_tachy_svt: { // 結局 3
-            text: "【結局 3：穩定頻脈 - 窄 QRS 規則 (PSVT)】\n成功給予 Adenosine。若依然無效可能需重新評估或尋找其他原因。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        // 窄不規則 (Af/AF)
-        tachy_af: {
-            text: "EKG 為窄 QRS 不規則 (Af/AF)。首要治療目標為控制心率。\n若病患無心衰竭(肺部無囉音)，可考慮使用的藥物為？",
-            type: "choice",
-            options: [
-                { text: "鈣離子通道阻斷劑 (如 Diltiazem) 或 β受體阻斷藥", next: "end_tachy_af" },
-                { text: "Adenosine 12mg", isError: true, errorText: "錯誤！Adenosine 主要用於規則的 SVT。" }
-            ]
-        },
-        end_tachy_af: { // 結局 4
-            text: "【結局 4：穩定頻脈 - 窄 QRS 不規則 (Af/AF)】\n控制心率後可考慮矯正 Af。\n若發生 < 48hrs，可用 Amiodarone 150mg 滴注或同步整流 200J。\n若 ≥ 48hrs，需先做 TEE 排除血栓再給抗凝血藥。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        // 寬規則 (VT, Af+WPW, Af+aberrant)
-        tachy_wide_reg: {
-            text: "EKG 為寬 QRS 規則心律。請依據病史或進一步判讀選擇確切心律：",
-            type: "choice",
-            options: [
-                { text: "確診為有脈搏的 VT", next: "tachy_vt" },
-                { text: "Af 合併變異傳導 (Af with aberrant)", next: "end_tachy_af_aberrant" },
-                { text: "Af 合併 WPW 症候群", next: "tachy_wpw" }
-            ]
-        },
-        tachy_vt: {
-            text: "確診為穩定的 VT。請輸入建議的 Amiodarone 滴注劑量(加在D5W，>10分鐘)：",
-            type: "input", unit: "mg", correctValue: 150, next: "end_tachy_vt",
-            errorText: "錯誤！穩定 VT 建議 Amiodarone 150 mg IVF 滴注。"
-        },
-        end_tachy_vt: { // 結局 5
-            text: "【結局 5：穩定頻脈 - 寬 QRS 規則 (VT)】\n若無 QT 延長且心室功能良好，也可考慮使用 Procainamide (20-50mg/min)。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        end_tachy_af_aberrant: { // 結局 6
-            text: "【結局 6：穩定頻脈 - Af 合併變異傳導】\n需查看病人以前的 EKG 紀錄確認有無 BBB (如 Af+RBBB)。後續比照一般處置。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        tachy_wpw: {
-            text: "確診有 WPW 症候群合併 Af。處置時**絕對不可**使用哪些藥物？",
-            type: "choice",
-            options: [
-                { text: "Amiodarone 或 Procainamide", isError: true, errorText: "錯誤！這兩種藥物是可以用於 WPW+Af 的。" },
-                { text: "β抑制劑、鈣離子通道阻斷劑、Adenosine 或 Digoxin", next: "end_tachy_wpw" }
-            ]
-        },
-        end_tachy_wpw: { // 結局 7
-            text: "【結局 7：穩定頻脈 - Af 合併 WPW】\nWPW+Af 可用 Procainamide 或 Amiodarone (慎用並會診)。若藥物無效，第一考量為執行同步整流 200J。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        // 寬不規則 (Poly VT)
-        tachy_poly_vt: {
-            text: "EKG 顯示寬 QRS 且不規則 (發生 Torsade-de pointes 心室手風琴狀頻脈)。\n這是一種危急狀態，核心儀器處置與藥物為何？",
-            type: "choice",
-            options: [
-                { text: "同步心臟整流 100J + Amiodarone", isError: true, errorText: "錯誤！Torsade-de pointes 應立即非同步電擊，並給予 MgSO4。" },
-                { text: "非同步電擊 (200J) + MgSO4 (1-2gm IVF)", next: "end_tachy_poly" }
-            ]
-        },
-        end_tachy_poly: { // 結局 8
-            text: "【結局 8：穩定頻脈 - 多型性 VT】\n後續處置需：1. 停止造成 QT 延長藥物 2. 校正電解質 3. 處置中毒。\n若 QT 正常(多因AMI引起)，才考慮給予 Amiodarone。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-
-        // --- 不穩定頻脈 ---
-        tachy_unstable: {
-            text: "病患為不穩定頻脈。首要且核心的處置為「同步心臟整流」。\n在進行整流前，應先給予什麼藥物？",
-            type: "choice",
-            options: [
-                { text: "鎮定止痛藥物 (如 Diazepam +/- Fentanyl)", next: "tachy_unstable_joule" },
-                { text: "Amiodarone 300mg", isError: true, errorText: "錯誤！整流前應先給予鎮定止痛，以免病患痛苦。" }
-            ]
-        },
-        tachy_unstable_joule: {
-            text: "給予鎮定後準備同步整流。\n若心律為心房顫動 (Af)，請輸入建議的雙向波設定焦耳數：",
-            type: "input", unit: "J", correctValue: 200, next: "tachy_unstable_refractory",
-            errorText: "錯誤！Af 建議同步整流 200 J (VT/PSVT則為100J)。"
-        },
-        tachy_unstable_refractory: {
-            text: "若執行同步整流後病患「仍無反應」(頑固性頻脈)。\n依據 2025 年新版指引，能量調整的策略為何？",
-            type: "choice",
-            options: [
-                { text: "改採「一次到位」策略，往上調整同步整律能量(最多3次)，並找原因會診", next: "end_tachy_unstable" },
-                { text: "採用漸進式能量慢慢加", isError: true, errorText: "錯誤！2025新版指出不再採用過時的漸進式能量。" }
-            ]
-        },
-        end_tachy_unstable: { // 結局 9
-            text: "【結局 9：有脈搏且不穩定 - 頻脈】\n備註：若為不穩定的 PSVT，在病患無低血壓前提下，整流前可先嘗試給予 Adenosine 6mg。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-
-        // ================= 無脈搏 (急救) =================
-        no_pulse_start: {
-            text: "確認沒有呼吸、沒有脈搏。立即啟動急救、開始 HP-CPR (30:2) 並接上監視器。\n心律分析結果為？",
-            type: "choice",
-            options: [
-                { text: "心室纖維顫動(Vf) 或 無脈搏心室頻脈(pVT)", next: "arrest_shockable" },
-                { text: "Asystole 或 PEA (無脈搏電氣活動)", next: "arrest_pea" }
-            ]
-        },
-        // 可電擊 (Vf/pVT)
-        arrest_shockable: {
-            text: "判斷為可電擊心律 (Vf/pVT)。\n請輸入第一次非同步去顫(電擊)的雙向波焦耳數：",
-            type: "input", unit: "J", correctValue: 200, next: "vf_cpr1",
-            errorText: "錯誤！應給予雙向波 200J 非同步去顫。"
-        },
-        vf_cpr1: {
-            text: "第一次電擊 200J 完畢。下一步應立即做什麼？",
-            type: "choice",
-            options: [
-                { text: "立刻重新開始 CPR 2 分鐘 (不必檢查脈搏)", next: "vf_shock2" },
-                { text: "檢查脈搏看是否恢復", isError: true, errorText: "錯誤！電擊後應立即繼續 CPR，不要浪費時間檢查脈搏。" }
-            ]
-        },
-        vf_shock2: {
-            text: "CPR 2分鐘後，分析心律仍為 Vf。給予第 2 次 200J 電擊並繼續 CPR。\n此時應給予 Epinephrine，請輸入單次靜脈注射劑量：",
-            type: "input", unit: "mg", correctValue: 1, next: "vf_shock3",
-            errorText: "錯誤！應給予 Epinephrine 1 mg IV，每 3-5 分鐘一次。"
-        },
-        vf_shock3: {
-            text: "又過 2 分鐘，心律仍為 Vf。給予第 3 次 200J 電擊並繼續 CPR。\n此時給予抗心律不整藥物 Amiodarone，請輸入【第一劑】靜脈推注劑量：",
-            type: "input", unit: "mg", correctValue: 300, next: "end_arrest_vf",
-            errorText: "錯誤！第 3 次電擊後，Amiodarone 第一劑為 300 mg IV push。"
-        },
-        end_arrest_vf: { // 結局 10
-            text: "【結局 10：無脈搏 - 可電擊心律 (Vf/pVT)】\n若需給第二次 Amiodarone 為 150mg。\n針對持續性VF，2025年考慮向量改變去顫(VC)或雙序列同步去顫(DSD)。\n若 ROSC，啟動復甦後照護 (TTM, MAP≥65 等)。\n\n(完成此路徑！)",
-            isEnd: true
-        },
-        // 不可電擊 (Asystole/PEA)
-        arrest_pea: {
-            text: "判斷為不可電擊心律 (Asystole / PEA)。\n應持續 CPR 2分鐘並盡快給予急救藥物。\n請輸入應盡早給予的 Epinephrine 劑量：",
-            type: "input", unit: "mg", correctValue: 1, next: "pea_find_cause",
-            errorText: "錯誤！應盡早給予 Epinephrine 1 mg IV (每3-5分鐘一次)。"
-        },
-        pea_find_cause: {
-            text: "給藥並持續 CPR。在此路徑中，搶救成功的關鍵是積極尋找並處理什麼？",
-            type: "choice",
-            options: [
-                { text: "立即給予 Amiodarone", isError: true, errorText: "錯誤！Amiodarone 用於可電擊心律 (Vf/pVT)。" },
-                { text: "5H / 5T 的可逆轉原因", next: "end_arrest_pea" }
-            ]
-        },
-        end_arrest_pea: { // 結局 11
-            text: "【結局 11：無脈搏 - 不可電擊心律 (Asystole/PEA)】\n5H：低血容、低血氧、低/高血鉀、低體溫、酸中毒。\n5T：張力性氣胸、心包膜填塞、毒物、肺栓塞、冠狀動脈栓塞。\n若無法急救成功，根據 Universal TOR 準則評估終止急救。\n\n(完成此路徑！)",
-            isEnd: true
-        }
-    };
-
-    // 考試模式的出題起點 (涵蓋11種路徑)
-    const examStarts = [
-        "brady_start", "tachy_start", "no_pulse_start", // 基本
-        "tachy_stable_ekg", "brady_unstable", "tachy_unstable", // 進階
-        "tachy_wide_reg", "arrest_shockable", "arrest_pea"
-    ];
-
-    let currentMode = '';
-    let currentNodeId = '';
-
-    function startGame(mode) {
-        currentMode = mode;
-        document.getElementById('main-menu').style.display = 'none';
-        document.getElementById('game-area').style.display = 'block';
-        
-        if (mode === 'learning') {
-            document.getElementById('mode-title').innerText = "📚 學習模式";
-            document.getElementById('next-exam-btn').style.display = 'none';
-            renderNode('start');
-        } else {
-            document.getElementById('mode-title').innerText = "🎯 考試模式";
-            document.getElementById('next-exam-btn').style.display = 'inline-block';
-            nextExam();
-        }
-    }
-
-    function returnToMenu() {
-        document.getElementById('main-menu').style.display = 'block';
-        document.getElementById('game-area').style.display = 'none';
-        hideFeedback();
-    }
-
-    function nextExam() {
-        hideFeedback();
-        // 隨機抽選一個情境起點
-        const randomStart = examStarts[Math.floor(Math.random() * examStarts.length)];
-        renderNode(randomStart);
-    }
-
-    function hideFeedback() {
-        const fb = document.getElementById('feedback-msg');
-        fb.style.display = 'none';
-        fb.className = 'feedback';
-    }
-
-    function showFeedback(msg, isError) {
-        const fb = document.getElementById('feedback-msg');
-        fb.innerText = msg;
-        fb.className = isError ? 'feedback error' : 'feedback success';
-        fb.style.display = 'block';
-    }
-
-    function renderNode(nodeId) {
-        hideFeedback();
-        currentNodeId = nodeId;
-        const node = nodes[nodeId];
-        
-        // 渲染文字
-        document.getElementById('scenario-text').innerText = node.text;
-        
-        // 清理選項和輸入框
-        const optionsContainer = document.getElementById('options-container');
-        optionsContainer.innerHTML = '';
-        document.getElementById('input-container').style.display = 'none';
-        document.getElementById('value-input').value = '';
-        
-        if (node.isEnd) {
-            // 結局畫面處理
-            if (currentMode === 'exam') {
-                showFeedback("🎉 恭喜完成此情境！請點擊『下一題』繼續考試。", false);
-            }
-            return;
-        }
-
-        if (node.type === 'choice') {
-            node.options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = opt.text;
-                btn.onclick = () => handleChoice(index);
-                optionsContainer.appendChild(btn);
-            });
-        } else if (node.type === 'input') {
-            document.getElementById('input-container').style.display = 'block';
-            document.getElementById('unit-text').innerText = node.unit;
-            document.getElementById('value-input').focus();
-        }
-    }
-
-    function handleChoice(optionIndex) {
-        const node = nodes[currentNodeId];
-        const selected = node.options[optionIndex];
-        
-        if (selected.isError) {
-            showFeedback(selected.errorText, true);
-        } else {
-            renderNode(selected.next);
-        }
-    }
-
-    function checkInput() {
-        const node = nodes[currentNodeId];
-        const userVal = parseFloat(document.getElementById('value-input').value);
-        
-        if (isNaN(userVal)) {
-            showFeedback("請輸入有效的數字！", true);
-            return;
-        }
-        
-        if (userVal === node.correctValue) {
-            showFeedback("正確！", false);
-            setTimeout(() => {
-                renderNode(node.next);
-            }, 800);
-        } else {
-            showFeedback(node.errorText, true);
-        }
-    }
-
-    // 支援 Enter 鍵提交輸入
-    document.getElementById('value-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            checkInput();
-        }
-    });
-
-</script>
+    <script src="pathways.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
